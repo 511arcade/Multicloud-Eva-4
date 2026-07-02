@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cruz Azul ERP — Acceso</title>
+  <link rel="stylesheet" href="/static/styles.css" />
+</head>
+<body class="login-bg">
+  <div class="login-card">
+    <div class="brand">
+      <span class="cross">✚</span>
+      <h1>Cruz Azul <small>ERP</small></h1>
+    </div>
+    <p class="subtitle">Acceso condicional por token (AAA + MFA)</p>
+
+    <% if (error) { %>
+      <div class="alert"><%= error %></div>
+    <% } %>
+
+    <form method="POST" action="/login">
+      <label>Correo corporativo</label>
+      <input type="email" name="email" placeholder="admin@cruzazul.cl" required autofocus />
+
+      <label>Contraseña</label>
+      <input type="password" name="password" placeholder="••••••••" required />
+
+      <label>Código MFA (si está habilitado)</label>
+      <input type="text" name="totp" placeholder="123456" inputmode="numeric" autocomplete="one-time-code" />
+
+      <button type="submit">Ingresar</button>
+    </form>
+    <p class="hint">Demo: <code>admin@cruzazul.cl</code> / <code>Admin123!</code></p>
+  </div>
+</body>
+</html>

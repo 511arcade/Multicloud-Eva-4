@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cruz Azul ERP — Inventario</title>
+  <link rel="stylesheet" href="/static/styles.css" />
+</head>
+<body>
+  <%- include('partials/nav', { user: user }) %>
+  <main class="container">
+    <h2>Inventario de productos</h2>
+    <% if (typeof error !== 'undefined' && error) { %>
+      <div class="alert">No se pudo consultar la BD: <%= error %></div>
+    <% } %>
+    <table class="table">
+      <thead>
+        <tr><th>SKU</th><th>Nombre</th><th>Laboratorio</th><th>Precio</th><th>Stock</th></tr>
+      </thead>
+      <tbody>
+        <% productos.forEach(function(p) { %>
+          <tr>
+            <td><%= p.sku %></td>
+            <td><%= p.nombre %></td>
+            <td><%= p.laboratorio %></td>
+            <td>$<%= p.precio %></td>
+            <td><%= p.stock %></td>
+          </tr>
+        <% }); %>
+        <% if (productos.length === 0) { %>
+          <tr><td colspan="5">Sin productos.</td></tr>
+        <% } %>
+      </tbody>
+    </table>
+  </main>
+</body>
+</html>

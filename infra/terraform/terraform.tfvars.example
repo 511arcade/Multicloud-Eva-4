@@ -1,0 +1,20 @@
+# Copia este archivo a terraform.tfvars y ajusta los valores.
+aws_region    = "us-east-1"
+project_name  = "cruz-azul-erp"
+instance_type = "t3.micro"
+
+# Nombre de tu key pair EC2 (si quieres acceso SSH)
+key_name = ""
+
+# AMI personalizada del Web ERP (creada desde tu instancia en ejecución).
+# Déjala vacía para usar Amazon Linux 2023 + user-data.
+ami_id = ""
+
+# Tamaño del Auto Scaling Group (según enunciado)
+asg_min     = 1
+asg_desired = 4
+asg_max     = 8
+
+# Umbrales de CPU para el escalado
+cpu_high_threshold = 60
+cpu_low_threshold  = 20

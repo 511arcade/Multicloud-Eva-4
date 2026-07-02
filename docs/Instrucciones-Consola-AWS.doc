@@ -1,0 +1,104 @@
+<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40">
+<head>
+<meta charset="utf-8">
+<title>Instrucciones Consola AWS - Cruz Azul ERP</title>
+<!--[if gte mso 9]><xml><w:WordDocument><w:View>Print</w:View><w:Zoom>100</w:Zoom></w:WordDocument></xml><![endif]-->
+<style>
+  body { font-family: Calibri, Arial, sans-serif; font-size: 11pt; color: #1a1a1a; line-height: 1.4; }
+  h1 { color: #0a3d91; font-size: 20pt; border-bottom: 3px solid #1e6fd9; padding-bottom: 6px; }
+  h2 { color: #0a3d91; font-size: 15pt; margin-top: 22px; border-bottom: 1px solid #cbd5e1; }
+  h3 { color: #1e6fd9; font-size: 12pt; }
+  code, pre { font-family: Consolas, monospace; background: #f1f5f9; }
+  pre { padding: 8px; border-left: 3px solid #1e6fd9; white-space: pre-wrap; }
+  table { border-collapse: collapse; width: 100%; }
+  th, td { border: 1px solid #94a3b8; padding: 6px 8px; text-align: left; font-size: 10.5pt; }
+  th { background: #0a3d91; color: #fff; }
+  .nota { background: #eaf1fb; border-left: 4px solid #1e6fd9; padding: 8px 12px; }
+</style>
+</head>
+<body>
+
+<h1>Cruz Azul ERP — Instrucciones de Configuración en la Consola de AWS</h1>
+<p><b>Asignatura:</b> Arquitectura Multicloud (TI3053_N5_C2) &nbsp;|&nbsp; <b>Evaluación N°4</b><br>
+Estas instrucciones cubren las tareas que deben realizarse manualmente en la consola de AWS
+(o que conviene hacer en consola para capturar evidencia para el informe y el video).</p>
+
+<div class="nota"><b>Requisito previo — Iniciar el Learner Lab:</b> AWS Academy → tu curso →
+Learner Lab → <b>Start Lab</b> (espera el punto verde) → clic en <b>AWS</b> para abrir la consola.
+Trabaja en la región habilitada (normalmente <code>us-east-1</code>).</div>
+
+<h2>§3. Base de datos PostgreSQL (IaaS dockerizado)</h2>
+<ol>
+<li>EC2 → <b>Launch Instance</b>. Nombre <code>cruz-azul-db</code>. AMI: <b>Amazon Linux 2023</b>. Tipo <code>t3.micro</code>.</li>
+<li>Red: tu VPC, <b>subred privada</b>, Security Group <b>SG-DB</b> (5432 solo desde SG-Web).</li>
+<li>En <b>User data</b> pega el contenido de <code>scripts/userdata-db.sh</code> (ajusta URL del repo y contraseña).</li>
+<li>Lanza la instancia. Al arrancar instalará Docker y levantará PostgreSQL en el puerto 5432.</li>
+<li>Anota la <b>IP privada</b> de esta instancia (la usará el Web ERP en su <code>.env</code>).</li>
+</ol>
+
+<h2>§4. Frontend Web ERP (instancia base para la AMI)</h2>
+<ol>
+<li>EC2 → <b>Launch Instance</b>. Nombre <code>cruz-azul-web-base</code>. AMI Amazon Linux 2023. Tipo <code>t3.micro</code>.</li>
+<li>Red: subred pública (temporal para instalar), SG <b>SG-Web</b>.</li>
+<li><b>User data</b>: pega <code>scripts/userdata-web.sh</code>, reemplaza <code>CHANGE_ME_DB_PRIVATE_IP</code> por la IP privada de la BD y define un <code>JWT_SECRET</code> aleatorio.</li>
+<li>Verifica en el navegador <code>http://&lt;IP-publica&gt;:3000/health</code> → debe responder <code>ok</code>.</li>
+</ol>
+
+<h2>§5. Crear las AMIs (Requerimiento 5)</h2>
+<ol>
+<li>EC2 → Instancias → selecciona <code>cruz-azul-web-base</code>.</li>
+<li><b>Acciones → Imagen y plantillas → Crear imagen</b>. Nombre <code>ami-cruz-azul-web</code>.</li>
+<li>Repite con la instancia de BD → <code>ami-cruz-azul-db</code>.</li>
+<li>EC2 → AMIs: espera estado <b>available</b> y <b>copia el AMI ID</b> del Web ERP.</li>
+</ol>
+<div class="nota"><b>Evidencia:</b> pantalla de "Crear imagen" y la lista de AMIs en estado available.</div>
+
+<h2>§6. Balanceador de carga — Application Load Balancer (Requerimiento 6)</h2>
+<ol>
+<li>EC2 → Load Balancers → <b>Create → Application Load Balancer</b>. Nombre <code>cruz-azul-erp-alb</code>, esquema internet-facing.</li>
+<li>Network mapping: tu VPC + <b>dos subredes públicas</b> (dos AZ). Security group: <b>SG-ALB</b>.</li>
+<li>Listener HTTP :80 → Create target group: tipo <b>Instances</b>, <code>cruz-azul-erp-tg</code>, HTTP puerto <b>3000</b>, health check <code>/health</code>, código 200.</li>
+<li>Crear el ALB y copiar su <b>DNS name</b> (registro A) para seguimiento e informe.</li>
+</ol>
+<p><b>Justificación del tipo:</b> el ERP es una app HTTP/HTTPS; el ALB (capa 7) ofrece health checks
+a nivel de aplicación, ruteo por path/host y se integra nativamente con el Auto Scaling Group.</p>
+
+<h2>§7. Launch Template + Auto Scaling Group (Requerimiento 7)</h2>
+<ol>
+<li>EC2 → Launch Templates → Create. Nombre <code>cruz-azul-erp-lt</code>, AMI <b>ami-cruz-azul-web</b>, tipo <code>t3.micro</code>, SG <b>SG-Web</b>.</li>
+<li>EC2 → Auto Scaling Groups → Create. Nombre <code>cruz-azul-erp-asg</code>, usa el launch template.</li>
+<li>Red: VPC + <b>dos subredes privadas</b>. Adjunta el target group <code>cruz-azul-erp-tg</code>. Health check type <b>ELB</b>.</li>
+<li>Group size: <b>Desired = 4, Minimum = 1, Maximum = 8</b>.</li>
+<li>Scaling policy: <b>Target tracking</b> → Average CPU utilization → <b>60%</b>.</li>
+</ol>
+<div class="nota"><b>Evidencia:</b> ASG con 4 instancias InService y el Target Group healthy.</div>
+
+<h2>§8. Escalado automático en subred privada (Requerimiento 8)</h2>
+<ol>
+<li>Confirma que las instancias del ASG están en subredes privadas.</li>
+<li>Prueba de estrés: <pre>bash scripts/stress-test.sh http://&lt;DNS-DEL-ALB&gt; 50 300</pre></li>
+<li>La CPU superará el 60% → <b>scale-out</b>. Al detener la carga → <b>scale-in</b> (terminación).</li>
+</ol>
+<div class="nota"><b>Evidencia:</b> Activity history del ASG con "Launching..." y "Terminating...".</div>
+
+<h2>§9. Alarmas de CloudWatch (Requerimiento 9)</h2>
+<ol>
+<li>CloudWatch → Alarms → Create alarm → Select metric → EC2 → By Auto Scaling Group → <code>cruz-azul-erp-asg</code> → <b>CPUUtilization</b>.</li>
+<li>Condición ≥ 60 → acción scale-out (alarma <code>cpu-high</code>).</li>
+<li>Condición ≤ 20 → acción scale-in (alarma <code>cpu-low</code>).</li>
+<li>Crea un Dashboard <code>cruz-azul-erp-dashboard</code> con CPU e instancias en servicio.</li>
+</ol>
+<div class="nota"><b>Evidencia:</b> alarmas In alarm/OK durante la prueba y el dashboard de CPU.</div>
+
+<h2>§10. Seguridad — AAA + MFA</h2>
+<ol>
+<li>IAM → Users → tu usuario → Security credentials → <b>Assign MFA device</b> (app TOTP).</li>
+<li>A nivel de app: activa <code>MFA_ENABLED=true</code> y registra <code>users.mfa_secret</code>.</li>
+</ol>
+
+<h2>Limpieza al finalizar</h2>
+<p>Elimina en orden: ASG → ALB/Target Group → Launch Template → AMIs → instancias → NAT/EIP → VPC.
+O ejecuta <code>infra/aws-cli/99-cleanup.sh</code> / <code>terraform destroy</code>. Luego <b>Stop Lab</b>.</p>
+
+</body>
+</html>

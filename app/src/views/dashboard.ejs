@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cruz Azul ERP — Dashboard</title>
+  <link rel="stylesheet" href="/static/styles.css" />
+</head>
+<body>
+  <%- include('partials/nav', { user: user }) %>
+  <main class="container">
+    <h2>Panel de control</h2>
+    <p>Bienvenido, <strong><%= user.email %></strong> (rol: <%= user.role %>)</p>
+
+    <div class="grid">
+      <div class="card">
+        <h3>Instancia atendiendo</h3>
+        <p class="big"><%= instance %></p>
+        <small>Refresca la página tras el balanceo para ver cambiar la instancia (evidencia del ELB).</small>
+      </div>
+      <div class="card">
+        <h3>Base de datos (PostgreSQL IaaS)</h3>
+        <p class="big <%= dbStatus === 'conectada' ? 'ok' : 'bad' %>"><%= dbStatus %></p>
+      </div>
+      <div class="card">
+        <h3>Productos en inventario</h3>
+        <p class="big"><%= productCount %></p>
+        <a href="/erp/productos">Ver inventario →</a>
+      </div>
+    </div>
+  </main>
+</body>
+</html>

@@ -1,0 +1,39 @@
+# Node
+node_modules/
+npm-debug.log*
+.env
+.env.local
+
+# Terraform
+infra/terraform/.terraform/
+infra/terraform/*.tfstate
+infra/terraform/*.tfstate.*
+infra/terraform/*.tfvars
+!infra/terraform/*.tfvars.example
+crash.log
+
+# Credenciales / llaves
+*.pem
+*.key
+aws-credentials*
+.DS_Store
+
+# Logs / temporales
+*.log
+tmp/
+output.txt
+
+# Docker
+database/pgdata/
+database/pgdata_fresh/
+database/pgdata_fresh16/
+
+# App node_modules
+app/node_modules/
+
+# Logs
+app/src/public/favicon_*
+app/*.log
+
+# OS
+Thumbs.db
