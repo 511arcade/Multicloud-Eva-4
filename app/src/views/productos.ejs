@@ -7,7 +7,7 @@
   <link rel="stylesheet" href="/static/styles.css" />
 </head>
 <body>
-  <%- include('partials/nav', { user: user, active: 'productos', instance: instance }) %>
+  <%- include('partials/nav', { user: user, active: 'productos', instance: typeof instance !== 'undefined' ? instance : '' }) %>
   <div class="main">
     <div class="topbar">
       <h2>Inventario de productos</h2>
@@ -18,19 +18,19 @@
       </div>
     </div>
     <div class="content">
-      <div class="section-header">
-        <p><%= productos.length %> productos farmacéuticos</p>
-      </div>
       <% if (typeof error !== 'undefined' && error) { %>
         <div class="alert"><%= error %></div>
       <% } %>
+      <div class="section-header">
+        <p><%= typeof productos !== 'undefined' ? productos.length : 0 %> productos farmacéuticos</p>
+      </div>
       <div class="table-container">
         <table>
           <thead>
             <tr><th>SKU</th><th>Nombre</th><th>Laboratorio</th><th>Precio</th><th>Stock</th></tr>
           </thead>
           <tbody>
-            <% productos.forEach(function(p) { %>
+            <% if (typeof productos !== 'undefined') { productos.forEach(function(p) { %>
               <tr>
                 <td><code><%= p.sku %></code></td>
                 <td><strong><%= p.nombre %></strong></td>
@@ -38,8 +38,8 @@
                 <td>$<%= Number(p.precio).toLocaleString('es-CL') %></td>
                 <td><span class="badge <%= p.stock > 50 ? 'badge-success' : (p.stock > 10 ? 'badge-warning' : 'badge-danger') %>"><%= p.stock %></span></td>
               </tr>
-            <% }); %>
-            <% if (productos.length === 0) { %>
+            <% }); } %>
+            <% if (typeof productos === 'undefined' || productos.length === 0) { %>
               <tr><td colspan="5" style="text-align:center;padding:30px;color:var(--gray-400)">Sin productos en inventario.</td></tr>
             <% } %>
           </tbody>

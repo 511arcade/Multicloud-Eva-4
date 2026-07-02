@@ -7,7 +7,7 @@
   <link rel="stylesheet" href="/static/styles.css" />
 </head>
 <body>
-  <%- include('partials/nav', { user: user, active: 'dashboard', instance: instance }) %>
+  <%- include('partials/nav', { user: user, active: 'dashboard', instance: typeof instance !== 'undefined' ? instance : '' }) %>
   <div class="main">
     <div class="topbar">
       <h2>Dashboard</h2>
@@ -21,33 +21,33 @@
       <div class="grid">
         <div class="card">
           <h3>Instancia atendiendo</h3>
-          <div class="stat-value"><%= instance %></div>
+          <div class="stat-value"><%= typeof instance !== 'undefined' ? instance : 'N/A' %></div>
           <div class="stat-label">Hostname EC2 — refresca para ver el balanceo (evidencia ELB)</div>
         </div>
         <div class="card">
           <h3>Base de datos</h3>
-          <div class="stat-value <%= dbStatus === 'conectada' ? 'ok' : 'bad' %>"><%= dbStatus %></div>
+          <div class="stat-value <%= typeof dbStatus !== 'undefined' && dbStatus === 'conectada' ? 'ok' : 'bad' %>"><%= typeof dbStatus !== 'undefined' ? dbStatus : 'desconocido' %></div>
           <div class="stat-label">PostgreSQL IaaS dockerizado</div>
         </div>
         <div class="card">
           <h3>Productos en inventario</h3>
-          <div class="stat-value"><%= productCount %></div>
+          <div class="stat-value"><%= typeof productCount !== 'undefined' ? productCount : 0 %></div>
           <div class="stat-label"><a href="/erp/productos">Ver catálogo →</a></div>
         </div>
         <div class="card">
           <h3>Balanceador</h3>
-          <div class="stat-value" style="font-size:14px"><%= albDns %></div>
+          <div class="stat-value" style="font-size:14px"><%= typeof albDns !== 'undefined' ? albDns : 'cruz-azul-erp-alb-1638459563.us-east-1.elb.amazonaws.com' %></div>
           <div class="stat-label">Application Load Balancer</div>
         </div>
       </div>
 
       <div class="card">
         <h3>Información del despliegue</h3>
-        <div class="info-row"><span class="info-label">Instancia</span><span class="info-value"><%= instance %></span></div>
-        <div class="info-row"><span class="info-label">Región</span><span class="info-value"><%= region %></span></div>
-        <div class="info-row"><span class="info-label">AWS Account</span><span class="info-value"><%= accountId %></span></div>
-        <div class="info-row"><span class="info-label">JWT</span><span class="info-value">Token activo · expira en <%= jwtExpires %></span></div>
-        <div class="info-row"><span class="info-label">MFA</span><span class="info-value"><%= mfaEnabled ? 'Habilitado' : 'Deshabilitado' %></span></div>
+        <div class="info-row"><span class="info-label">Instancia</span><span class="info-value"><%= typeof instance !== 'undefined' ? instance : 'N/A' %></span></div>
+        <div class="info-row"><span class="info-label">Región</span><span class="info-value"><%= typeof region !== 'undefined' ? region : 'us-east-1' %></span></div>
+        <div class="info-row"><span class="info-label">AWS Account</span><span class="info-value"><%= typeof accountId !== 'undefined' ? accountId : '-' %></span></div>
+        <div class="info-row"><span class="info-label">JWT</span><span class="info-value">Token activo</span></div>
+        <div class="info-row"><span class="info-label">MFA</span><span class="info-value"><%= typeof mfaEnabled !== 'undefined' && mfaEnabled ? 'Habilitado' : 'Deshabilitado' %></span></div>
       </div>
     </div>
   </div>
