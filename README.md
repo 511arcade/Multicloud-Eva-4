@@ -153,5 +153,10 @@ detallada en **[`docs/04-instrucciones-consola-aws.md`](docs/04-instrucciones-co
 
 **Repositorio:** [https://github.com/511arcade/Multicloud-Eva-4](https://github.com/511arcade/Multicloud-Eva-4)
 
-**Video-cápsula (YouTube, "no listado", 7–10 min):**  
-👉 `https://youtu.be/<PEGA_AQUI_TU_ID>`
+---
+
+### ▶️ LINK VIDEO
+
+```
+https://youtu.be/<PEGA_AQUI_TU_ID_DE_YOUTUBE>
+```
