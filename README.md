@@ -149,9 +149,9 @@ detallada en **[`docs/04-instrucciones-consola-aws.md`](docs/04-instrucciones-co
 
 ---
 
-## 9. Repositorio
+## 9. Repositorio y video
 
-Enlace del repositorio GitHub/GitLab (completar antes de la entrega):
-`https://github.com/<usuario>/cruz_azul-erp`
+**Repositorio:** [https://github.com/511arcade/Multicloud-Eva-4](https://github.com/511arcade/Multicloud-Eva-4)
 
-Video-cápsula (YouTube, "no listado", 7–10 min): `https://youtu.be/<id>`
+**Video-cápsula (YouTube, "no listado", 7–10 min):**  
+👉 `https://youtu.be/<PEGA_AQUI_TU_ID>`
