@@ -6,11 +6,11 @@
   <title>Error <%= code %></title>
   <link rel="stylesheet" href="/static/styles.css" />
 </head>
-<body class="login-bg">
-  <div class="login-card">
-    <h1 style="text-align:center"><%= code %></h1>
-    <p style="text-align:center"><%= message %></p>
-    <p style="text-align:center"><a href="/">Volver al inicio</a></p>
+<body style="display:block" class="login-bg">
+  <div class="login-card" style="text-align:center">
+    <div style="font-size:48px;font-weight:800;color:var(--primary)"><%= code %></div>
+    <p style="margin:12px 0 20px;color:var(--gray-500)"><%= message %></p>
+    <a href="/" style="display:inline-block;padding:10px 24px;background:var(--primary);color:#fff;border-radius:8px;text-decoration:none">Volver al inicio</a>
   </div>
 </body>
 </html>

@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cruz Azul ERP — Seguridad AAA</title>
+  <link rel="stylesheet" href="/static/styles.css" />
+</head>
+<body>
+  <%- include('partials/nav', { user: user, active: 'seguridad', instance: instance }) %>
+  <div class="main">
+    <div class="topbar">
+      <h2>Seguridad AAA + MFA</h2>
+      <div class="topbar-right">
+        <span class="user-email"><%= user.email %></span>
+        <span class="badge badge-info"><%= user.role %></span>
+        <a class="logout-link" href="/logout">Cerrar sesión</a>
+      </div>
+    </div>
+    <div class="content">
+      <div class="grid">
+        <div class="card">
+          <h3>Authentication</h3>
+          <p style="font-size:13px;color:var(--gray-500)">Login con credenciales + emisión de JWT firmado. Rate limiting: 10 intentos/15min.</p>
+          <div class="info-row"><span class="info-label">Estado</span><span class="info-value"><span class="badge badge-success">Activo</span></span></div>
+          <div class="info-row"><span class="info-label">Token</span><span class="info-value">JWT · <%= jwtExpires %></span></div>
+        </div>
+        <div class="card">
+          <h3>Authorization</h3>
+          <p style="font-size:13px;color:var(--gray-500)">Middleware que valida token y rol en cada ruta protegida.</p>
+          <div class="info-row"><span class="info-label">Tu rol</span><span class="info-value"><span class="badge badge-info"><%= user.role %></span></span></div>
+          <div class="info-row"><span class="info-label">Acceso</span><span class="info-value">Condicional por token (AAA)</span></div>
+        </div>
+        <div class="card">
+          <h3>Accounting</h3>
+          <p style="font-size:13px;color:var(--gray-500)">Cada inicio de sesión se registra en BD con IP y timestamp.</p>
+          <div class="info-row"><span class="info-label">Registro</span><span class="info-value"><a href="/erp/logs">Ver logs →</a></span></div>
+        </div>
+        <div class="card">
+          <h3>MFA (TOTP)</h3>
+          <p style="font-size:13px;color:var(--gray-500)">Segundo factor opcional. Código de 6 dígitos vía app autenticadora.</p>
+          <div class="info-row"><span class="info-label">Estado</span><span class="info-value">
+            <span class="badge <%= mfaEnabled ? 'badge-success' : 'badge-warning' %>">
+              <%= mfaEnabled ? 'Habilitado' : 'Deshabilitado' %>
+            </span>
+          </span></div>
+          <div class="info-row"><span class="info-label">Config</span><span class="info-value"><code>MFA_ENABLED=<%= mfaEnabled %></code></span></div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:16px">
+        <h3>Modelo de seguridad por capas</h3>
+        <div class="table-container">
+          <table>
+            <thead><tr><th>Capa</th><th>Componente</th><th>Control</th></tr></thead>
+            <tbody>
+              <tr><td>Borde</td><td>ALB</td><td>SG-ALB: solo :80/:443 desde Internet</td></tr>
+              <tr><td>Aplicación</td><td>EC2 Web ERP</td><td>SG-Web: solo :3000 desde SG-ALB · JWT · Rate limiting</td></tr>
+              <tr><td>Datos</td><td>PostgreSQL</td><td>SG-DB: solo :5432 desde SG-Web · subred privada aislada</td></tr>
+              <tr><td>Transversal</td><td>IAM / CloudWatch</td><td>AAA, MFA, alarmas, dashboard</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

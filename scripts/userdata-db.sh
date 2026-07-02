@@ -20,7 +20,7 @@ chmod +x "$DOCKER_CONFIG/cli-plugins/docker-compose"
 mkdir -p /srv
 cd /srv
 if [ ! -d /srv/cruz_azul-erp ]; then
-  git clone https://github.com/CHANGE_ME/cruz_azul-erp.git
+  git clone https://github.com/511arcade/Multicloud-Eva-4.git /srv/cruz_azul-erp
 fi
 cd /srv/cruz_azul-erp/database
 

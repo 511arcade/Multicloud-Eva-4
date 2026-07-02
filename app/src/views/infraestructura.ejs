@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cruz Azul ERP — Infraestructura</title>
+  <link rel="stylesheet" href="/static/styles.css" />
+</head>
+<body>
+  <%- include('partials/nav', { user: user, active: 'infra', instance: instance }) %>
+  <div class="main">
+    <div class="topbar">
+      <h2>Infraestructura AWS</h2>
+      <div class="topbar-right">
+        <span class="user-email"><%= user.email %></span>
+        <span class="badge badge-info"><%= user.role %></span>
+        <a class="logout-link" href="/logout">Cerrar sesión</a>
+      </div>
+    </div>
+    <div class="content">
+      <div class="grid">
+        <div class="card">
+          <h3>Instancia actual</h3>
+          <div class="stat-value" style="font-size:16px"><%= instance %></div>
+          <div class="stat-label">EC2 atendiéndote ahora</div>
+        </div>
+        <div class="card">
+          <h3>Balanceador</h3>
+          <div class="stat-value" style="font-size:14px"><%= albDns %></div>
+          <div class="stat-label">Application Load Balancer · :80 → :3000</div>
+        </div>
+        <div class="card">
+          <h3>Auto Scaling Group</h3>
+          <div class="stat-value"><%= asgDesired %></div>
+          <div class="stat-label">Deseadas <%= asgDesired %> · Mín <%= asgMin %> · Máx <%= asgMax %></div>
+        </div>
+        <div class="card">
+          <h3>Escalado</h3>
+          <div class="stat-value"><%= scalingPolicy %></div>
+          <div class="stat-label">Target Tracking CPU</div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:16px">
+        <h3>Arquitectura por capas</h3>
+        <pre>
+  Internet
+      │
+  ┌───▼──────────┐
+  │  ALB (:80)   │  Aplication Load Balancer
+  └───┬──────────┘
+      │
+  ┌───▼──────────┐
+  │  Web ERP     │  Auto Scaling Group (min 1 / desired 4 / max 8)
+  │  EC2 × 4     │  Subredes privadas · SG-Web
+  └───┬──────────┘
+      │
+  ┌───▼──────────┐
+  │  PostgreSQL  │  IaaS dockerizado · EC2 t3.micro
+  │  IP: <%= dbHost %>  │  Subred privada · SG-DB
+  └──────────────┘
+
+  Monitoreo: Amazon CloudWatch · Alarmas CPU ≥60% y ≤20%
+  Seguridad: AAA (JWT) + MFA (TOTP) + Security Groups + subredes privadas</pre>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

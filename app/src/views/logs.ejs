@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cruz Azul ERP — Registro de Accesos</title>
+  <link rel="stylesheet" href="/static/styles.css" />
+</head>
+<body>
+  <%- include('partials/nav', { user: user, active: 'logs', instance: instance }) %>
+  <div class="main">
+    <div class="topbar">
+      <h2>Registro de Accesos (Accounting)</h2>
+      <div class="topbar-right">
+        <span class="user-email"><%= user.email %></span>
+        <span class="badge badge-info"><%= user.role %></span>
+        <a class="logout-link" href="/logout">Cerrar sesión</a>
+      </div>
+    </div>
+    <div class="content">
+      <div class="card">
+        <h3>Historial de actividad</h3>
+        <p style="margin-bottom:16px;font-size:13px;color:var(--gray-500)">Registro de inicios de sesión y actividades del sistema (AAA Accounting).</p>
+        <% if (typeof error !== 'undefined' && error) { %>
+          <div class="alert"><%= error %></div>
+        <% } %>
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr><th>Usuario</th><th>Acción</th><th>IP</th><th>Fecha</th></tr>
+            </thead>
+            <tbody>
+              <% logs.forEach(function(l) { %>
+                <tr>
+                  <td><%= l.email %></td>
+                  <td><span class="badge badge-info"><%= l.action %></span></td>
+                  <td><code><%= l.ip %></code></td>
+                  <td><%= l.created_at %></td>
+                </tr>
+              <% }); %>
+              <% if (logs.length === 0) { %>
+                <tr><td colspan="4" style="text-align:center;padding:30px;color:var(--gray-400)">Sin registros aún.</td></tr>
+              <% } %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

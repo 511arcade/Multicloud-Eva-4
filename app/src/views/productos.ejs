@@ -7,31 +7,45 @@
   <link rel="stylesheet" href="/static/styles.css" />
 </head>
 <body>
-  <%- include('partials/nav', { user: user }) %>
-  <main class="container">
-    <h2>Inventario de productos</h2>
-    <% if (typeof error !== 'undefined' && error) { %>
-      <div class="alert">No se pudo consultar la BD: <%= error %></div>
-    <% } %>
-    <table class="table">
-      <thead>
-        <tr><th>SKU</th><th>Nombre</th><th>Laboratorio</th><th>Precio</th><th>Stock</th></tr>
-      </thead>
-      <tbody>
-        <% productos.forEach(function(p) { %>
-          <tr>
-            <td><%= p.sku %></td>
-            <td><%= p.nombre %></td>
-            <td><%= p.laboratorio %></td>
-            <td>$<%= p.precio %></td>
-            <td><%= p.stock %></td>
-          </tr>
-        <% }); %>
-        <% if (productos.length === 0) { %>
-          <tr><td colspan="5">Sin productos.</td></tr>
-        <% } %>
-      </tbody>
-    </table>
-  </main>
+  <%- include('partials/nav', { user: user, active: 'productos', instance: instance }) %>
+  <div class="main">
+    <div class="topbar">
+      <h2>Inventario de productos</h2>
+      <div class="topbar-right">
+        <span class="user-email"><%= user.email %></span>
+        <span class="badge badge-info"><%= user.role %></span>
+        <a class="logout-link" href="/logout">Cerrar sesión</a>
+      </div>
+    </div>
+    <div class="content">
+      <div class="section-header">
+        <p><%= productos.length %> productos farmacéuticos</p>
+      </div>
+      <% if (typeof error !== 'undefined' && error) { %>
+        <div class="alert"><%= error %></div>
+      <% } %>
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr><th>SKU</th><th>Nombre</th><th>Laboratorio</th><th>Precio</th><th>Stock</th></tr>
+          </thead>
+          <tbody>
+            <% productos.forEach(function(p) { %>
+              <tr>
+                <td><code><%= p.sku %></code></td>
+                <td><strong><%= p.nombre %></strong></td>
+                <td><%= p.laboratorio %></td>
+                <td>$<%= Number(p.precio).toLocaleString('es-CL') %></td>
+                <td><span class="badge <%= p.stock > 50 ? 'badge-success' : (p.stock > 10 ? 'badge-warning' : 'badge-danger') %>"><%= p.stock %></span></td>
+              </tr>
+            <% }); %>
+            <% if (productos.length === 0) { %>
+              <tr><td colspan="5" style="text-align:center;padding:30px;color:var(--gray-400)">Sin productos en inventario.</td></tr>
+            <% } %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
 </body>
 </html>

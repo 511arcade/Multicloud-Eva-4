@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cruz Azul ERP — Monitoreo</title>
+  <link rel="stylesheet" href="/static/styles.css" />
+</head>
+<body>
+  <%- include('partials/nav', { user: user, active: 'monitoreo', instance: instance }) %>
+  <div class="main">
+    <div class="topbar">
+      <h2>Monitoreo CloudWatch</h2>
+      <div class="topbar-right">
+        <span class="user-email"><%= user.email %></span>
+        <span class="badge badge-info"><%= user.role %></span>
+        <a class="logout-link" href="/logout">Cerrar sesión</a>
+      </div>
+    </div>
+    <div class="content">
+      <div class="grid">
+        <div class="card">
+          <h3>Alarma CPU alta</h3>
+          <div class="stat-value <%= cpuHighAlarm === 'OK' ? 'ok' : 'bad' %>"><%= cpuHighAlarm %></div>
+          <div class="stat-label">≥60% CPU promedio → scale-out</div>
+        </div>
+        <div class="card">
+          <h3>Alarma CPU baja</h3>
+          <div class="stat-value <%= cpuLowAlarm === 'OK' ? 'ok' : 'bad' %>"><%= cpuLowAlarm %></div>
+          <div class="stat-label">≤20% CPU promedio → scale-in</div>
+        </div>
+        <div class="card">
+          <h3>Prueba de estrés</h3>
+          <div style="font-size:13px;margin-bottom:8px">Endpoint de carga para probar auto-scaling:</div>
+          <pre style="font-size:11px">GET /erp/api/cpu-load?ms=15000</pre>
+          <div style="font-size:13px;color:var(--gray-500)">Requiere token admin · quema CPU 15s</div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:16px">
+        <h3>Comandos de monitoreo (AWS CLI)</h3>
+        <pre># Ver estado del ASG
+aws autoscaling describe-auto-scaling-groups \
+  --auto-scaling-group-name cruz-azul-erp-asg \
+  --query 'AutoScalingGroups[0].Instances[*].{ID:InstanceId,Health:HealthStatus,Lifecycle:LifecycleState}'
+
+# Ver health del Target Group
+aws elbv2 describe-target-health \
+  --target-group-arn &lt;TG_ARN&gt;
+
+# CloudWatch alarmas
+aws cloudwatch describe-alarms \
+  --alarm-name-prefix TargetTracking-cruz-azul-erp-asg</pre>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

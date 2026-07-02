@@ -7,27 +7,49 @@
   <link rel="stylesheet" href="/static/styles.css" />
 </head>
 <body>
-  <%- include('partials/nav', { user: user }) %>
-  <main class="container">
-    <h2>Panel de control</h2>
-    <p>Bienvenido, <strong><%= user.email %></strong> (rol: <%= user.role %>)</p>
-
-    <div class="grid">
-      <div class="card">
-        <h3>Instancia atendiendo</h3>
-        <p class="big"><%= instance %></p>
-        <small>Refresca la página tras el balanceo para ver cambiar la instancia (evidencia del ELB).</small>
-      </div>
-      <div class="card">
-        <h3>Base de datos (PostgreSQL IaaS)</h3>
-        <p class="big <%= dbStatus === 'conectada' ? 'ok' : 'bad' %>"><%= dbStatus %></p>
-      </div>
-      <div class="card">
-        <h3>Productos en inventario</h3>
-        <p class="big"><%= productCount %></p>
-        <a href="/erp/productos">Ver inventario →</a>
+  <%- include('partials/nav', { user: user, active: 'dashboard', instance: instance }) %>
+  <div class="main">
+    <div class="topbar">
+      <h2>Dashboard</h2>
+      <div class="topbar-right">
+        <span class="user-email"><%= user.email %></span>
+        <span class="badge badge-info"><%= user.role %></span>
+        <a class="logout-link" href="/logout">Cerrar sesión</a>
       </div>
     </div>
-  </main>
+    <div class="content">
+      <div class="grid">
+        <div class="card">
+          <h3>Instancia atendiendo</h3>
+          <div class="stat-value"><%= instance %></div>
+          <div class="stat-label">Hostname EC2 — refresca para ver el balanceo (evidencia ELB)</div>
+        </div>
+        <div class="card">
+          <h3>Base de datos</h3>
+          <div class="stat-value <%= dbStatus === 'conectada' ? 'ok' : 'bad' %>"><%= dbStatus %></div>
+          <div class="stat-label">PostgreSQL IaaS dockerizado</div>
+        </div>
+        <div class="card">
+          <h3>Productos en inventario</h3>
+          <div class="stat-value"><%= productCount %></div>
+          <div class="stat-label"><a href="/erp/productos">Ver catálogo →</a></div>
+        </div>
+        <div class="card">
+          <h3>Balanceador</h3>
+          <div class="stat-value" style="font-size:14px"><%= albDns %></div>
+          <div class="stat-label">Application Load Balancer</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>Información del despliegue</h3>
+        <div class="info-row"><span class="info-label">Instancia</span><span class="info-value"><%= instance %></span></div>
+        <div class="info-row"><span class="info-label">Región</span><span class="info-value"><%= region %></span></div>
+        <div class="info-row"><span class="info-label">AWS Account</span><span class="info-value"><%= accountId %></span></div>
+        <div class="info-row"><span class="info-label">JWT</span><span class="info-value">Token activo · expira en <%= jwtExpires %></span></div>
+        <div class="info-row"><span class="info-label">MFA</span><span class="info-value"><%= mfaEnabled ? 'Habilitado' : 'Deshabilitado' %></span></div>
+      </div>
+    </div>
+  </div>
 </body>
 </html>

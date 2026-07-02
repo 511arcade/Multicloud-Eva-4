@@ -1,9 +1,30 @@
-<nav class="topbar">
-  <div class="topbar-brand"><span class="cross">✚</span> Cruz Azul ERP</div>
-  <div class="topbar-links">
-    <a href="/erp/dashboard">Dashboard</a>
-    <a href="/erp/productos">Inventario</a>
-    <span class="topbar-user"><%= user.email %></span>
-    <a class="logout" href="/logout">Salir</a>
+<aside class="sidebar">
+  <div class="sidebar-brand">
+    <span class="cross">✚</span>
+    <div>Cruz Azul <small>ERP</small></div>
   </div>
-</nav>
+  <nav class="sidebar-nav">
+    <a href="/erp/dashboard" class="<%= active === 'dashboard' ? 'active' : '' %>">
+      <span class="icon">📊</span> <span>Dashboard</span>
+    </a>
+    <a href="/erp/productos" class="<%= active === 'productos' ? 'active' : '' %>">
+      <span class="icon">💊</span> <span>Inventario</span>
+    </a>
+    <a href="/erp/logs" class="<%= active === 'logs' ? 'active' : '' %>">
+      <span class="icon">📋</span> <span>Registro de Accesos</span>
+    </a>
+    <a href="/erp/infraestructura" class="<%= active === 'infra' ? 'active' : '' %>">
+      <span class="icon">🖥️</span> <span>Infraestructura</span>
+    </a>
+    <a href="/erp/monitoreo" class="<%= active === 'monitoreo' ? 'active' : '' %>">
+      <span class="icon">📈</span> <span>Monitoreo</span>
+    </a>
+    <a href="/erp/seguridad" class="<%= active === 'seguridad' ? 'active' : '' %>">
+      <span class="icon">🔐</span> <span>Seguridad AAA</span>
+    </a>
+  </nav>
+  <div class="sidebar-footer">
+    <%= user.role %> · <%= user.email %><br>
+    <%= instance || '' %>
+  </div>
+</aside>
