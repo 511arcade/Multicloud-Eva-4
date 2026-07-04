@@ -7,13 +7,10 @@ dnf install -y git
 curl -fsSL https://rpm.nodesource.com/setup_20.x | bash -
 dnf install -y nodejs
 
+rm -rf /srv/cruz_azul-erp
 mkdir -p /srv
 cd /srv
-if [ ! -d /srv/cruz_azul-erp ]; then
-  git clone https://github.com/511arcade/Multicloud-Eva-4.git /srv/cruz_azul-erp
-else
-  cd /srv/cruz_azul-erp && git pull origin main
-fi
+git clone https://github.com/511arcade/Multicloud-Eva-4.git /srv/cruz_azul-erp
 cd /srv/cruz_azul-erp/app
 
 npm install --omit=dev
@@ -50,4 +47,4 @@ EOF
 systemctl daemon-reload
 systemctl enable --now cruz-azul-erp.service
 
-echo "Frontend Web ERP en ejecución en el puerto 3000" > /var/log/cruz-azul-web-init.log
+echo "Frontend Web ERP en ejecucion en el puerto 3000" > /var/log/cruz-azul-web-init.log
